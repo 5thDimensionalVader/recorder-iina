@@ -18,6 +18,12 @@
     "process": "^0.11.10"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@fontsource/inter": "^5.2.8",
+    "@mui/icons-material": "^7.3.5",
+    "@mui/joy": "5.0.0-beta.52",
+    "@mui/material": "^7.3.5",
     "parcel": "^2.8.3",
     "parcel-optimizer-webview": "git+https://github.com/iina/parcel-optimizer-webview.git",
     "react": "^18.2.0",

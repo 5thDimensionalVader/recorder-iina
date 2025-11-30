@@ -16,6 +16,7 @@
     "file-system"
   ],
   "allowedDomains": ["*"],
+  "sidebarTab": { "name": "Recorder"},
   "preferencesPage": "pref.html",
   "preferenceDefaults": {}
 }

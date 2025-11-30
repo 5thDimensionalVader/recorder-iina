@@ -5,11 +5,11 @@ const {
   event,
   mpv,
   utils,
-  overlay
+  overlay,
 } = iina;
 
 // load the react file
-const window = iina.standaloneWindow;
+const window = iina.sidebar;
 
 // functions
 function postEndTimeMessage () {
@@ -48,7 +48,7 @@ async function ffmpegExecFn(start, finish, window) {
     ]);
     if (status == 0){
       displaySimpleOverlay("Clipping processed successfully!", "18px");
-      window.close();
+      window.hide();
     } else {
       displaySimpleOverlay(`FFmpeg error code ${status}`, "18px", true);
     }
@@ -73,20 +73,18 @@ function postCurrentTimeOnce() {
 
 function closeWindow() {
   window.onMessage("closeWindow", () => {
-    window.close();
+    window.hide();
   });
 }
 
-window.setFrame(500, 300);
 window.loadFile("dist/ui/window/index.html");
-window.setProperty({title: "Start Clipping"});
 postEndTimeMessage();
 processVideoClip();
 closeWindow();
 
 // start recording menu item
 const startRecorderMenuItem = menu.item("Start Clipping", () => {
-  window.open();
+  window.show();
   postCurrentTimeOnce();
 }, {
   keyBinding: "Alt+Shift+r",

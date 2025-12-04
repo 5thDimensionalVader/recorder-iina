@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CssVarsProvider, CssBaseline } from "@mui/joy";
+import { CssVarsProvider, CssBaseline, Box } from "@mui/joy";
 
 // ui imports
 import Input from "@mui/joy/Input";
@@ -7,38 +7,43 @@ import Stack from "@mui/joy/Stack";
 import FormControl from "@mui/joy/FormControl";
 import FormLabel from "@mui/joy/FormLabel";
 import Button from "@mui/joy/Button";
+import Typography from "@mui/joy/Typography";
+import Card from "@mui/joy/Card";
+import CardContent from "@mui/joy/CardContent";
 
 // icons
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-
+import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
 
 export default App = () => {
   const [currentPos, setCurrentPos] = useState("");
   const [endPos, setEndPos] = useState("");
+  const [isFfmpegInstalled, setIsFfmpegInstalled] = useState(false);
 
   function formatTime(positionInSec) {
     const hours = Math.floor(positionInSec / 3600);
     const minutes = Math.floor(positionInSec / 60);
     const seconds = Math.floor(positionInSec % 60);
     return [hours, minutes, seconds]
-    .map(v => String(v).padStart(2, '0'))
-    .join(':');
+      .map((v) => String(v).padStart(2, "0"))
+      .join(":");
   }
 
   async function getEndTime() {
-  return new Promise((resolve, _reject) => {
-    iina.postMessage("getEndTime");
-    iina.onMessage("endTime", ({ time }) => resolve(time));
-  });
-}
+    return new Promise((resolve, _reject) => {
+      iina.postMessage("getEndTime");
+      iina.onMessage("endTime", ({ time }) => resolve(time));
+    });
+  }
 
   async function processVideoClip() {
-  iina.postMessage("processVideoClip", {
-    startPos: currentPos,
-    endPos: endPos,
-  });
-}
+    iina.postMessage("processVideoClip", {
+      startPos: currentPos,
+      endPos: endPos,
+    });
+  }
 
   function handleSetEndTime() {
     getEndTime().then((time) => {
@@ -57,15 +62,39 @@ export default App = () => {
       const formattedTime = formatTime(time);
       setCurrentPos(formattedTime);
     };
+    const handleDepencencyCheck = ({ isInstalled }) => {
+      setIsFfmpegInstalled(isInstalled);
+    };
 
     iina.onMessage("currentTime", handleTimeUpdate);
+    iina.onMessage("is-ffmpeg-installed", handleDepencencyCheck);
   }, []);
 
-  useEffect(() => {
-    return () => {
-      setEndPos("");
-    }
-  }, []);
+  const dependencyCheckComponent = (
+    <Card sx={{ marginBottom: 2 }}>
+      <CardContent>
+        {isFfmpegInstalled ? (
+          <Typography
+            level="body-sm"
+            startDecorator={
+              <DoneAllIcon sx={{ color: "green", marginRight: 1 }} />
+            }
+          >
+            ffmpeg is installed
+          </Typography>
+        ) : (
+          <Typography
+            level="body-sm"
+            startDecorator={
+              <RemoveDoneIcon sx={{ color: "red", marginRight: 1 }} />
+            }
+          >
+            ffmpeg isn't installed
+          </Typography>
+        )}
+      </CardContent>
+    </Card>
+  );
 
   const startRecordingInputComponent = (
     <FormControl>
@@ -73,9 +102,10 @@ export default App = () => {
       <Input
         type="text"
         variant="outlined"
-        startDecorator={<AddCircleIcon/>}
-        value={currentPos}
+        startDecorator={<AddCircleIcon />}
+        value={isFfmpegInstalled ? currentPos : "00:00:00"}
         readOnly
+        disabled={!isFfmpegInstalled}
       />
     </FormControl>
   );
@@ -91,16 +121,15 @@ export default App = () => {
         type="text"
         variant="outlined"
         startDecorator={<RemoveCircleIcon />}
-        value={endPos}
+        value={isFfmpegInstalled ? endPos : "00:00:00"}
         endDecorator={
-          <Button
-            variant="solid"
-            onClick={handleSetEndTime}
+          <Button variant="solid" onClick={handleSetEndTime} disabled={!isFfmpegInstalled}
           >
             Set End Time
           </Button>
         }
         readOnly
+        disabled={!isFfmpegInstalled}
       />
     </FormControl>
   );
@@ -118,7 +147,7 @@ export default App = () => {
       <Button
         variant="solid"
         onClick={processVideoClip}
-        disabled={endPos === ""}
+        disabled={endPos === "" || !isFfmpegInstalled}
       >
         Process Clip
       </Button>
@@ -126,7 +155,7 @@ export default App = () => {
         variant="solid"
         onClick={() => handleCloseBtn()}
         sx={{
-          backgroundColor: "red"
+          backgroundColor: "red",
         }}
       >
         Cancel
@@ -137,9 +166,12 @@ export default App = () => {
   return (
     <CssVarsProvider defaultMode="system">
       <CssBaseline />
-      {startRecordingInputComponent}
-      {endRecordingInputComponent}
-      {actionButtonsComponent}
+      <Box sx={{ padding: 2 }}>
+        {dependencyCheckComponent}
+        {startRecordingInputComponent}
+        {endRecordingInputComponent}
+        {actionButtonsComponent}
+      </Box>
     </CssVarsProvider>
   );
 };

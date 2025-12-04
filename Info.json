@@ -1,7 +1,7 @@
 {
   "name": "Recorder",
   "identifier": "com.recorder.iina-plugin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Clip your favorite moments from your videos.",
   "author": {
     "name": "Daniel Ifechukwude Chinye",

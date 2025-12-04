@@ -1,4 +1,4 @@
-import { postEndTimeMessage, processVideoClip, closeWindow, postCurrentTimeOnce } from "./lib/plugin";
+import { postEndTimeMessage, processVideoClip, closeWindow, postCurrentTimeOnce, isFfmpegInstalled, postFfmpegStdoutMessage } from "./lib/plugin";
 
 const {
   menu,
@@ -17,6 +17,7 @@ closeWindow(window);
 const startRecorderMenuItem = menu.item("Start Clipping", () => {
   window.show();
   postCurrentTimeOnce(window);
+  isFfmpegInstalled(window);
 }, {
   keyBinding: "Alt+Shift+r",
 })

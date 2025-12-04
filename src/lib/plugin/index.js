@@ -6,7 +6,7 @@ const {
 } = iina;
 
 // DISPLAY UI FUNCTION
-export function displaySimpleOverlay(message, size = "15px", isError = false, duration = 3000){
+export function displaySimpleOverlay(message, size = "15px", isError = false, duration = 3000) {
   overlay.simpleMode();
   overlay.setContent(`<p>${message}</p>`);
   overlay.setStyle(`p { color: ${isError ? "red" : "green"}; font-size: ${size}; margin-top: 40px;}`);
@@ -18,7 +18,7 @@ export function displaySimpleOverlay(message, size = "15px", isError = false, du
 }
 
 // ACTION LISTENERS FOR UI
-export function postEndTimeMessage (window) {
+export function postEndTimeMessage(window) {
   window.onMessage("getEndTime", () => {
     let time = mpv.getNumber("time-pos");
     window.postMessage("endTime", {
@@ -29,9 +29,9 @@ export function postEndTimeMessage (window) {
 }
 
 export function processVideoClip(window) {
-    window.onMessage("processVideoClip", ({ startPos, endPos }) => {
-      ffmpegExecFn(startPos, endPos, window);
-    });
+  window.onMessage("processVideoClip", ({ startPos, endPos }) => {
+    ffmpegExecFn(startPos, endPos, window);
+  });
 }
 
 export function closeWindow(window) {
@@ -47,26 +47,39 @@ export function postCurrentTimeOnce(window) {
   });
 }
 
+export function isFfmpegInstalled(window) {
+  let bool = utils.fileInPath("/opt/homebrew/bin/ffmpeg");
+  if (!bool) bool = utils.fileInPath("/usr/local/bin/ffmpeg");
+  window.postMessage("is-ffmpeg-installed", {
+    isInstalled: bool,
+  });
+}
+
 // LOCAL PLUGIN FUNCTION
 export async function ffmpegExecFn(start, finish, window, ffmpegPath = "/opt/homebrew/bin/ffmpeg") {
-  if(utils.fileInPath(ffmpegPath)){
-    displaySimpleOverlay("Processing ...");
-    const { status, stderr } = await utils.exec(ffmpegPath, [
-      "-i", mpv.getString("path"),
-      "-ss", start,
-      "-to", finish,
-      "-crf", "21",
-      "-c:v", "libx264",
-      "-c:a", "copy",
-      "-movflags", "+faststart",
-      `${mpv.getString("path").substring(0, mpv.getString("path").lastIndexOf("/"))}/${mpv.getString("filename")}_clip.mov`,
-    ]);
-    if (status == 0){
-      displaySimpleOverlay("Clipping processed successfully!", "18px");
-      window.hide();
-      core.resume();
-    } else {
-      displaySimpleOverlay(`FFmpeg error code ${status}`, "18px", true);
+  if (utils.fileInPath(ffmpegPath)) {
+    displaySimpleOverlay("Processing ...", "18px");
+    try {
+      const { status } = await utils.exec(ffmpegPath, [
+        "-i", mpv.getString("path"),
+        "-ss", start,
+        "-to", finish,
+        "-crf", "21",
+        "-c:v", "libx264",
+        "-c:a", "copy",
+        "-movflags", "+faststart",
+        `${mpv.getString("path").substring(0, mpv.getString("path").lastIndexOf("/"))}/${mpv.getString("filename").slice(0, mpv.getString("filename").lastIndexOf("."))}_clip.mov`,
+      ]);
+
+      if (status === 0) {
+        displaySimpleOverlay("Clip saved in " + mpv.getString("path").substring(0, mpv.getString("path").lastIndexOf("/")), "18px");
+        window.hide();
+        core.resume();
+      } else {
+        displaySimpleOverlay(`FFmpeg error code ${status}`, "18px", true);
+      }
+    } catch (error) {
+      displaySimpleOverlay(`An error occured: ${error}`, "18px", true);
     }
   } else {
     displaySimpleOverlay("ffmpeg not found", true);

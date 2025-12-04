@@ -61,6 +61,12 @@ export default App = () => {
     iina.onMessage("currentTime", handleTimeUpdate);
   }, []);
 
+  useEffect(() => {
+    return () => {
+      setEndPos("");
+    }
+  }, []);
+
   const startRecordingInputComponent = (
     <FormControl>
       <FormLabel>Current Time</FormLabel>

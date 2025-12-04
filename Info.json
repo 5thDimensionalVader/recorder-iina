@@ -1,13 +1,13 @@
 {
   "name": "Recorder",
   "identifier": "com.recorder.iina-plugin",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Clip your favorite moments from your videos.",
   "author": {
     "name": "Daniel Ifechukwude Chinye",
     "email": "chinyedaniel@gmail.com"
   },
-  "ghVersion": 1,
+  "ghVersion": 2,
   "ghRepo": "5thDimensionalVader/recorder-iina",
   "entry": "dist/index.js",
   "permissions": [
@@ -19,6 +19,5 @@
   ],
   "allowedDomains": ["*"],
   "sidebarTab": { "name": "Recorder"},
-  "preferencesPage": "pref.html",
   "preferenceDefaults": {}
 }

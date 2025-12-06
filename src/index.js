@@ -1,7 +1,8 @@
-import { postEndTimeMessage, processVideoClip, closeWindow, postCurrentTimeOnce, isFfmpegInstalled, postFfmpegStdoutMessage } from "./lib/plugin";
+import { postEndTimeMessage, processVideoClip, closeWindow, postCurrentTimeOnce, isFfmpegInstalled } from "./lib/plugin";
 
 const {
   menu,
+  mpv,
 } = iina;
 
 // create sidebar instance

@@ -16,15 +16,17 @@ import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
+import HourglassTopOutlinedIcon from '@mui/icons-material/HourglassTopOutlined';
 
 export default App = () => {
   const [currentPos, setCurrentPos] = useState("");
   const [endPos, setEndPos] = useState("");
   const [isFfmpegInstalled, setIsFfmpegInstalled] = useState(false);
+  const [ffmpegStatus, setFfmpegStatus] = useState(false);
 
   function formatTime(positionInSec) {
     const hours = Math.floor(positionInSec / 3600);
-    const minutes = Math.floor(positionInSec / 60);
+    const minutes = Math.floor((positionInSec % 3600) / 60);
     const seconds = Math.floor(positionInSec % 60);
     return [hours, minutes, seconds]
       .map((v) => String(v).padStart(2, "0"))
@@ -35,6 +37,12 @@ export default App = () => {
     return new Promise((resolve, _reject) => {
       iina.postMessage("getEndTime");
       iina.onMessage("endTime", ({ time }) => resolve(time));
+    });
+  }
+
+  async function getFfmpegStatus() {
+    return new Promise((resolve) => {
+      iina.onMessage("ffmpeg-status-out", ({ status }) => resolve(status));
     });
   }
 
@@ -69,6 +77,15 @@ export default App = () => {
     iina.onMessage("currentTime", handleTimeUpdate);
     iina.onMessage("is-ffmpeg-installed", handleDepencencyCheck);
   }, []);
+
+  useEffect(() => {
+    function handleFfmpegStatus() {
+      getFfmpegStatus().then((status) => {
+        setFfmpegStatus(status);
+      });
+    }
+    handleFfmpegStatus();
+  }, [ffmpegStatus])
 
   const dependencyCheckComponent = (
     <Card sx={{ marginBottom: 2 }}>
@@ -147,9 +164,10 @@ export default App = () => {
       <Button
         variant="solid"
         onClick={processVideoClip}
-        disabled={endPos === "" || !isFfmpegInstalled}
+        disabled={endPos === "" || !isFfmpegInstalled || ffmpegStatus}
+        loading={ffmpegStatus}
       >
-        Process Clip
+        Clip
       </Button>
       <Button
         variant="solid"
@@ -157,10 +175,24 @@ export default App = () => {
         sx={{
           backgroundColor: "red",
         }}
+        disabled={ffmpegStatus}
       >
         Cancel
       </Button>
     </Stack>
+  );
+
+  const ffmpegStatusComponent = (
+    <Card variant="soft" color="success" sx={{ marginBottom: 2, marginTop: 2 }}>
+      <CardContent>
+        <Typography
+          level="body-sm"
+          startDecorator={<HourglassTopOutlinedIcon /> }
+        >
+          Your clip is processing ...
+        </Typography>
+      </CardContent>
+    </Card>
   );
 
   return (
@@ -171,6 +203,7 @@ export default App = () => {
         {startRecordingInputComponent}
         {endRecordingInputComponent}
         {actionButtonsComponent}
+        {ffmpegStatus && ffmpegStatusComponent}
       </Box>
     </CssVarsProvider>
   );

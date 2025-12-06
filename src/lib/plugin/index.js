@@ -55,23 +55,36 @@ export function isFfmpegInstalled(window) {
   });
 }
 
+function postFfmpegStatus(window, status = false) {
+  window.postMessage("ffmpeg-status-out", {
+      status: status,
+    });
+}
+
 // LOCAL PLUGIN FUNCTION
-export async function ffmpegExecFn(start, finish, window, ffmpegPath = "/opt/homebrew/bin/ffmpeg") {
+async function ffmpegExecFn(start, finish, window, ffmpegPath = "/opt/homebrew/bin/ffmpeg") {
+  let isFfmpegRunning = false;
   if (utils.fileInPath(ffmpegPath)) {
     displaySimpleOverlay("Processing ...", "18px");
     try {
+      isFfmpegRunning = true;
+      postFfmpegStatus(window, isFfmpegRunning);
       const { status } = await utils.exec(ffmpegPath, [
-        "-i", mpv.getString("path"),
-        "-ss", start,
-        "-to", finish,
-        "-crf", "21",
-        "-c:v", "libx264",
-        "-c:a", "copy",
-        "-movflags", "+faststart",
+        '-hwaccel', 'videotoolbox',
+        '-i', mpv.getString("path"),
+        '-ss', start,
+        '-to', finish,
+        '-vf', 'crop=w=ih*(9/16):h=ih:x=(iw-ow)/2:y=0,format=yuv420p',
+        '-c:v', 'h264_videotoolbox',
+        '-q:v', '70',
+        '-c:a', 'copy',
+        '-movflags', '+faststart',
         `${mpv.getString("path").substring(0, mpv.getString("path").lastIndexOf("/"))}/${mpv.getString("filename").slice(0, mpv.getString("filename").lastIndexOf("."))}_clip.mov`,
       ]);
 
       if (status === 0) {
+        isFfmpegRunning = false;
+        postFfmpegStatus(window, isFfmpegRunning);
         displaySimpleOverlay("Clip saved in " + mpv.getString("path").substring(0, mpv.getString("path").lastIndexOf("/")), "18px");
         window.hide();
         core.resume();

@@ -124,5 +124,3 @@ out
 *.js.map
 *.css.map
 package-lock.json
-
-dist/

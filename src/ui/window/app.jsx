@@ -10,21 +10,30 @@ import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
 import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
+import Switch from "@mui/joy/Switch";
+import Divider from "@mui/joy/Divider";
+import IconButton from "@mui/joy/IconButton";
+import Tooltip from "@mui/joy/Tooltip";
 
 // icons
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import DoneAllIcon from "@mui/icons-material/DoneAll";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
+import StopIcon from "@mui/icons-material/Stop";
+import HourglassTopIcon from "@mui/icons-material/HourglassTop";
 
 export default App = () => {
   const [currentPos, setCurrentPos] = useState("");
   const [endPos, setEndPos] = useState("");
   const [isFfmpegInstalled, setIsFfmpegInstalled] = useState(false);
+  const [ffmpegStatus, setFfmpegStatus] = useState(false);
+  const [hwaccel, setHwaccel] = useState(true);
+  const [verticalCrop, setVerticalCrop] = useState(false);
 
   function formatTime(positionInSec) {
     const hours = Math.floor(positionInSec / 3600);
-    const minutes = Math.floor(positionInSec / 60);
+    const minutes = Math.floor((positionInSec % 3600) / 60);
     const seconds = Math.floor(positionInSec % 60);
     return [hours, minutes, seconds]
       .map((v) => String(v).padStart(2, "0"))
@@ -38,10 +47,18 @@ export default App = () => {
     });
   }
 
+  async function getFfmpegStatus() {
+    return new Promise((resolve) => {
+      iina.onMessage("ffmpeg-status-out", ({ status }) => resolve(status));
+    });
+  }
+
   async function processVideoClip() {
     iina.postMessage("processVideoClip", {
       startPos: currentPos,
       endPos: endPos,
+      hwaccel: hwaccel,
+      verticalCrop: verticalCrop,
     });
   }
 
@@ -70,14 +87,23 @@ export default App = () => {
     iina.onMessage("is-ffmpeg-installed", handleDepencencyCheck);
   }, []);
 
+  useEffect(() => {
+    function handleFfmpegStatus() {
+      getFfmpegStatus().then((status) => {
+        setFfmpegStatus(status);
+      });
+    }
+    handleFfmpegStatus();
+  }, [ffmpegStatus]);
+
   const dependencyCheckComponent = (
-    <Card sx={{ marginBottom: 2 }}>
+    <Card variant="soft" sx={{ marginTop: 2 }}>
       <CardContent>
         {isFfmpegInstalled ? (
           <Typography
             level="body-sm"
             startDecorator={
-              <DoneAllIcon sx={{ color: "green", marginRight: 1 }} />
+              <CheckCircleIcon sx={{ color: "green", marginRight: 1 }} />
             }
           >
             ffmpeg is installed
@@ -97,41 +123,83 @@ export default App = () => {
   );
 
   const startRecordingInputComponent = (
-    <FormControl>
-      <FormLabel>Current Time</FormLabel>
+    <Tooltip title="Start" variant="soft" placement="bottom-start">
       <Input
         type="text"
-        variant="outlined"
-        startDecorator={<AddCircleIcon />}
+        variant="soft"
         value={isFfmpegInstalled ? currentPos : "00:00:00"}
         readOnly
         disabled={!isFfmpegInstalled}
+        sx={{
+          maxWidth: "100%",
+        }}
       />
-    </FormControl>
+    </Tooltip>
   );
 
   const endRecordingInputComponent = (
-    <FormControl
-      sx={{
-        marginTop: 2,
-      }}
-    >
-      <FormLabel>End Time</FormLabel>
+    <Tooltip title="End" variant="soft" placement="bottom-start">
       <Input
         type="text"
-        variant="outlined"
-        startDecorator={<RemoveCircleIcon />}
+        variant="soft"
         value={isFfmpegInstalled ? endPos : "00:00:00"}
         endDecorator={
-          <Button variant="solid" onClick={handleSetEndTime} disabled={!isFfmpegInstalled}
+          <IconButton
+            onClick={handleSetEndTime}
+            disabled={!isFfmpegInstalled}
+            variant="soft"
+            color="danger"
           >
-            Set End Time
-          </Button>
+            <StopIcon />
+          </IconButton>
         }
+        sx={{
+          maxWidth: "100%",
+        }}
         readOnly
         disabled={!isFfmpegInstalled}
       />
-    </FormControl>
+    </Tooltip>
+  );
+
+  const clipControlComponent = (
+    <Stack
+      direction="row"
+      divider={<Divider orientation="vertical" />}
+      spacing={2}
+      sx={{ justifyContent: "center", marginTop: 3, marginBottom: 2 }}
+    >
+      <Typography
+        component="label"
+        level="body-sm"
+        endDecorator={
+          <Switch
+            checked={hwaccel}
+            variant="soft"
+            color={hwaccel ? "success" : "neutral"}
+            onChange={(event) => setHwaccel(event.target.checked)}
+            sx={{ ml: 1 }}
+          />
+        }
+      >
+        HW Acceleration
+      </Typography>
+      <Typography
+        component="label"
+        level="body-sm"
+        endDecorator={
+          <Switch
+            checked={verticalCrop}
+            variant="soft"
+            color={verticalCrop ? "success" : "neutral"}
+            onChange={(event) => setVerticalCrop(event.target.checked)}
+            sx={{ ml: 1 }}
+          />
+        }
+      >
+        Vertical Crop
+      </Typography>
+    </Stack>
   );
 
   const actionButtonsComponent = (
@@ -147,9 +215,10 @@ export default App = () => {
       <Button
         variant="solid"
         onClick={processVideoClip}
-        disabled={endPos === "" || !isFfmpegInstalled}
+        disabled={endPos === "" || !isFfmpegInstalled || ffmpegStatus}
+        loading={ffmpegStatus}
       >
-        Process Clip
+        Clip
       </Button>
       <Button
         variant="solid"
@@ -157,20 +226,40 @@ export default App = () => {
         sx={{
           backgroundColor: "red",
         }}
+        disabled={ffmpegStatus}
       >
-        Cancel
+        Close
       </Button>
     </Stack>
+  );
+
+  const ffmpegStatusComponent = (
+    <Card variant="soft" color="success" sx={{ marginBottom: 2, marginTop: 2 }}>
+      <CardContent>
+        <Typography level="body-sm" startDecorator={<HourglassTopIcon />}>
+          Your clip is processing ...
+        </Typography>
+      </CardContent>
+    </Card>
   );
 
   return (
     <CssVarsProvider defaultMode="system">
       <CssBaseline />
       <Box sx={{ padding: 2 }}>
-        {dependencyCheckComponent}
-        {startRecordingInputComponent}
-        {endRecordingInputComponent}
+        <Stack
+          direction="row"
+          divider={<Divider orientation="vertical" />}
+          spacing={2}
+          sx={{ justifyContent: "center", marginTop: 1, marginBottom: 1 }}
+        >
+          {startRecordingInputComponent}
+          {endRecordingInputComponent}
+        </Stack>
+        {clipControlComponent}
         {actionButtonsComponent}
+        {ffmpegStatus && ffmpegStatusComponent}
+        {dependencyCheckComponent}
       </Box>
     </CssVarsProvider>
   );

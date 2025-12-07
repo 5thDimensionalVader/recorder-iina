@@ -29,8 +29,8 @@ export function postEndTimeMessage(window) {
 }
 
 export function processVideoClip(window) {
-  window.onMessage("processVideoClip", ({ startPos, endPos }) => {
-    ffmpegExecFn(startPos, endPos, window);
+  window.onMessage("processVideoClip", ({ startPos, endPos, hwaccel, verticalCrop }) => {
+    ffmpegExecFn(startPos, endPos, hwaccel, verticalCrop, window);
   });
 }
 
@@ -55,23 +55,38 @@ export function isFfmpegInstalled(window) {
   });
 }
 
+function postFfmpegStatus(window, status = false) {
+  window.postMessage("ffmpeg-status-out", {
+      status: status,
+    });
+}
+
 // LOCAL PLUGIN FUNCTION
-export async function ffmpegExecFn(start, finish, window, ffmpegPath = "/opt/homebrew/bin/ffmpeg") {
+async function ffmpegExecFn(start, finish, hwaccel=false, verticalCrop=false, window, ffmpegPath = "/opt/homebrew/bin/ffmpeg") {
+  let isFfmpegRunning = false;
   if (utils.fileInPath(ffmpegPath)) {
     displaySimpleOverlay("Processing ...", "18px");
     try {
+      isFfmpegRunning = true;
+      postFfmpegStatus(window, isFfmpegRunning);
       const { status } = await utils.exec(ffmpegPath, [
-        "-i", mpv.getString("path"),
-        "-ss", start,
-        "-to", finish,
-        "-crf", "21",
-        "-c:v", "libx264",
-        "-c:a", "copy",
-        "-movflags", "+faststart",
+        hwaccel && '-hwaccel', hwaccel && 'videotoolbox',
+        '-i', mpv.getString("path"),
+        '-ss', start,
+        '-to', finish,
+        verticalCrop && '-vf', verticalCrop && 'crop=w=ih*(9/16):h=ih:x=(iw-ow)/2:y=0,format=yuv420p',
+        hwaccel && '-c:v', hwaccel && 'h264_videotoolbox',
+        hwaccel && '-q:v', hwaccel && '70',
+        !hwaccel && '-c:v', !hwaccel && 'libx264',
+        !hwaccel && '-crf', !hwaccel && '23',
+        '-c:a', 'copy',
+        '-movflags', '+faststart',
         `${mpv.getString("path").substring(0, mpv.getString("path").lastIndexOf("/"))}/${mpv.getString("filename").slice(0, mpv.getString("filename").lastIndexOf("."))}_clip.mov`,
-      ]);
+      ].filter(Boolean));
 
       if (status === 0) {
+        isFfmpegRunning = false;
+        postFfmpegStatus(window, isFfmpegRunning);
         displaySimpleOverlay("Clip saved in " + mpv.getString("path").substring(0, mpv.getString("path").lastIndexOf("/")), "18px");
         window.hide();
         core.resume();
@@ -82,7 +97,7 @@ export async function ffmpegExecFn(start, finish, window, ffmpegPath = "/opt/hom
       displaySimpleOverlay(`An error occured: ${error}`, "18px", true);
     }
   } else {
-    displaySimpleOverlay("ffmpeg not found", true);
+    displaySimpleOverlay("ffmpeg not found", "18px", true);
   }
 }
 

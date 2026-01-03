@@ -18,7 +18,7 @@ import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 
 // icons
-// icons
+import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
 import StopIcon from "@mui/icons-material/Stop";
@@ -49,6 +49,13 @@ const App = () => {
     });
   }
 
+  async function getStartTime() {
+    return new Promise((resolve) => {
+      iina.postMessage("getStartTime");
+      iina.onMessage("startTime", ({ time }) => resolve(time));
+    });
+  }
+
   async function getFfmpegStatus() {
     return new Promise((resolve) => {
       iina.onMessage("ffmpeg-status-out", ({ status }) => resolve(status));
@@ -72,6 +79,13 @@ const App = () => {
     });
   }
 
+  function handleSetStartTime() {
+    getStartTime().then((time) => {
+      const formattedStartTime = formatTime(time);
+      setCurrentPos(formattedStartTime);
+    });
+  }
+
   function handleCloseBtn() {
     iina.postMessage("closeWindow");
     setEndPos("");
@@ -79,6 +93,10 @@ const App = () => {
 
   useEffect(() => {
     const handleTimeUpdate = ({ time }) => {
+      // Only auto-update if we haven't manually set a start time (check logic if needed, 
+      // but simpler is to let auto-update only run ONCE on load, which is handled by index.js postCurrentTimeOnce)
+      // Actually, looking at index.js, postCurrentTimeOnce sends "currentTime" once.
+      // So this effect runs once.
       const formattedTime = formatTime(time);
       setCurrentPos(formattedTime);
     };
@@ -133,6 +151,16 @@ const App = () => {
         value={isFfmpegInstalled ? currentPos : "00:00:00"}
         readOnly
         disabled={!isFfmpegInstalled}
+        endDecorator={
+          <IconButton
+            onClick={handleSetStartTime}
+            disabled={!isFfmpegInstalled}
+            variant="soft"
+            color="success"
+          >
+            <PlayCircleIcon />
+          </IconButton>
+        }
         sx={{
           maxWidth: "100%",
         }}

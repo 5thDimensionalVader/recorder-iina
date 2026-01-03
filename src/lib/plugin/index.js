@@ -28,6 +28,16 @@ export function postEndTimeMessage(window) {
   })
 }
 
+export function postStartTimeMessage(window) {
+  window.onMessage("getStartTime", () => {
+    let time = mpv.getNumber("time-pos");
+    window.postMessage("startTime", {
+      time: time,
+    });
+    core.pause();
+  })
+}
+
 export function processVideoClip(window) {
   window.onMessage("processVideoClip", ({ startPos, endPos, hwaccel, verticalCrop, format }) => {
     ffmpegExecFn(startPos, endPos, hwaccel, verticalCrop, format, window);

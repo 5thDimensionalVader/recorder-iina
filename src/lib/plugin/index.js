@@ -93,7 +93,7 @@ async function ffmpegExecFn(start, finish, hwaccel = false, verticalCrop = false
         !hwaccel && '-crf', !hwaccel && '23',
         '-c:a', 'copy',
         '-movflags', '+faststart',
-        `${directory}/${name_no_ext}_clip.${extension}`,
+        `${directory}/${nameNoExt}_clip.${extension}`,
       ].filter(Boolean));
 
       if (status === 0) {

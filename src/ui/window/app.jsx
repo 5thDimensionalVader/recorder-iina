@@ -18,14 +18,13 @@ import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
 
 // icons
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+// icons
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
 import StopIcon from "@mui/icons-material/Stop";
 import HourglassTopIcon from "@mui/icons-material/HourglassTop";
 
-export default App = () => {
+const App = () => {
   const [currentPos, setCurrentPos] = useState("");
   const [endPos, setEndPos] = useState("");
   const [isFfmpegInstalled, setIsFfmpegInstalled] = useState(false);
@@ -44,7 +43,7 @@ export default App = () => {
   }
 
   async function getEndTime() {
-    return new Promise((resolve, _reject) => {
+    return new Promise((resolve) => {
       iina.postMessage("getEndTime");
       iina.onMessage("endTime", ({ time }) => resolve(time));
     });
@@ -119,7 +118,7 @@ export default App = () => {
               <RemoveDoneIcon sx={{ color: "red", marginRight: 1 }} />
             }
           >
-            ffmpeg isn't installed
+            ffmpeg isn&apos;t installed
           </Typography>
         )}
       </CardContent>
@@ -173,6 +172,21 @@ export default App = () => {
       spacing={2}
       sx={{ justifyContent: "center", marginTop: 3, marginBottom: 2 }}
     >
+      <Typography
+        component="label"
+        level="body-sm"
+        endDecorator={
+          <Switch
+            checked={hwaccel}
+            variant="soft"
+            color={hwaccel ? "success" : "neutral"}
+            onChange={(event) => setHwaccel(event.target.checked)}
+            sx={{ ml: 1 }}
+          />
+        }
+      >
+        HW Acceleration
+      </Typography>
       <Typography
         component="label"
         level="body-sm"
@@ -266,3 +280,5 @@ export default App = () => {
     </CssVarsProvider>
   );
 };
+
+export default App;

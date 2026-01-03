@@ -11,7 +11,7 @@ import Typography from "@mui/joy/Typography";
 import Card from "@mui/joy/Card";
 import CardContent from "@mui/joy/CardContent";
 import Switch from "@mui/joy/Switch";
-import Divider from "@mui/joy/Divider";
+
 import IconButton from "@mui/joy/IconButton";
 import Tooltip from "@mui/joy/Tooltip";
 import Select from "@mui/joy/Select";
@@ -25,6 +25,7 @@ import StopIcon from "@mui/icons-material/Stop";
 import HourglassTopIcon from "@mui/icons-material/HourglassTop";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 const App = () => {
   const [clips, setClips] = useState([{ id: 1, start: "00:00:00", end: "", status: "IDLE" }]);
@@ -70,6 +71,12 @@ const App = () => {
       verticalCrop: verticalCrop,
       format: format,
     });
+  }
+
+  function handlePreview(start, end) {
+    if (start && end) {
+      iina.postMessage("previewClip", { start, end });
+    }
   }
 
   const updateClip = (id, field, value) => {
@@ -282,8 +289,8 @@ const App = () => {
             <Stack
               key={clip.id}
               direction="row"
-              divider={<Divider orientation="vertical" />}
-              spacing={2}
+              divider={null}
+              spacing={1}
               sx={{ justifyContent: "center", alignItems: "center" }}
             >
               <Tooltip title="Start" variant="soft" placement="bottom-start">
@@ -306,6 +313,20 @@ const App = () => {
                   sx={{ maxWidth: 140 }}
                 />
               </Tooltip>
+
+              {/* Preview Button */}
+              {clip.start !== "00:00:00" && clip.end !== "" && (
+                <Tooltip title="Preview Clip" variant="soft">
+                  <IconButton
+                    onClick={() => handlePreview(clip.start, clip.end)}
+                    variant="plain"
+                    color="primary"
+                  >
+                    <PlayArrowIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
+
               <Tooltip title="End" variant="soft" placement="bottom-start">
                 <Input
                   type="text"
@@ -330,9 +351,9 @@ const App = () => {
               {clip.status === 'PROCESSING' && <HourglassTopIcon sx={{ color: 'orange' }} />}
               {clip.status === 'COMPLETED' && <CheckCircleIcon sx={{ color: 'green' }} />}
               {clip.status === 'ERROR' && <RemoveDoneIcon sx={{ color: 'red' }} />}
-              {/* Remove Button (only if > 1) */}
-              {clips.length > 1 && (
-                <IconButton onClick={() => removeClip(clip.id)} color="danger" variant="plain">
+              {/* Remove Button (only if > 1 AND Status is IDLE) */}
+              {clips.length > 1 && clip.status === 'IDLE' && (
+                <IconButton onClick={() => removeClip(clip.id)} color="danger" variant="plain" size="sm">
                   <RemoveCircleIcon />
                 </IconButton>
               )}

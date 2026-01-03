@@ -3,7 +3,44 @@ const {
   mpv,
   utils,
   overlay,
+  event,
 } = iina;
+
+// ...
+
+export function handlePreviewMessage(window) {
+  let previewListener = null;
+
+  window.onMessage("previewClip", ({ start, end }) => {
+    // 1. Convert start (HH:MM:SS) to seconds
+    const [h, m, s] = start.split(':').map(Number);
+    const startSeconds = h * 3600 + m * 60 + s;
+
+    // 2. Convert end (HH:MM:SS) to seconds
+    const [eh, em, es] = end.split(':').map(Number);
+    const endSeconds = eh * 3600 + em * 60 + es;
+
+    // 3. Seek to start
+    mpv.set("time-pos", startSeconds);
+    core.resume(); // Ensure playing
+
+    // 4. Remove existing listener if any
+    if (previewListener) {
+      event.off("mpv.time-pos.changed", previewListener);
+      previewListener = null;
+    }
+
+    // 5. Add listener to stop at end
+    previewListener = (time) => {
+      if (time >= endSeconds) {
+        core.pause();
+        event.off("mpv.time-pos.changed", previewListener);
+        previewListener = null;
+      }
+    };
+    event.on("mpv.time-pos.changed", previewListener);
+  });
+}
 
 // DISPLAY UI FUNCTION
 export function displaySimpleOverlay(message, size = "15px", isError = false, duration = 3000) {

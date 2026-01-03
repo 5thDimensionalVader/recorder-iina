@@ -1,4 +1,4 @@
-import { postEndTimeMessage, postStartTimeMessage, processVideoClip, closeWindow, postCurrentTimeOnce, isFfmpegInstalled } from "./lib/plugin";
+import { postEndTimeMessage, postStartTimeMessage, processVideoClip, closeWindow, postCurrentTimeOnce, isFfmpegInstalled, handleUiReady } from "./lib/plugin";
 
 const {
   menu,
@@ -10,6 +10,7 @@ const window = iina.sidebar;
 
 // load the ui 
 window.loadFile("dist/ui/window/index.html");
+handleUiReady(window);
 postEndTimeMessage(window);
 postStartTimeMessage(window);
 processVideoClip(window);

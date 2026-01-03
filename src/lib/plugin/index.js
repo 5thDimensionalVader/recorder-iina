@@ -140,6 +140,14 @@ async function ffmpegExecFn(start, finish, hwaccel = false, verticalCrop = false
 }
 
 
+
+export function handleUiReady(window) {
+  window.onMessage("ui-ready", () => {
+    isFfmpegInstalled(window);
+    postCurrentTimeOnce(window);
+  });
+}
+
 // EVENTS - FOR LATER
 // event.on("mpv.time-pos.changed", () => {
 //   let time = mpv.getNumber("time-pos");

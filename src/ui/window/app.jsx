@@ -140,6 +140,9 @@ const App = () => {
     iina.onMessage("clip-status-update", handleClipStatusUpdate);
     iina.onMessage("batch-complete", handleBatchComplete);
 
+    // Notify backend that UI is ready
+    iina.postMessage("ui-ready");
+
   }, []);
 
   useEffect(() => {

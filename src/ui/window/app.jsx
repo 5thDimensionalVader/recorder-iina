@@ -77,7 +77,12 @@ const App = () => {
 
   function handlePreview(start, end) {
     if (start && end) {
-      iina.postMessage("previewClip", { start, end });
+      iina.postMessage("previewClip", {
+        start,
+        end,
+        verticalCrop, // Pass current state
+        cropMode      // Pass current state
+      });
     }
   }
 

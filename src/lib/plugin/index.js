@@ -6,10 +6,50 @@ const {
   event,
 } = iina;
 
-export function handlePreviewMessage(window) {
-  let previewListener = null;
+// VISUAL MASKING HELPER
+function showCropOverlay(cropMode) {
+  overlay.simpleMode();
 
-  window.onMessage("previewClip", ({ start, end }) => {
+  let maskHtml = "";
+  const bgStyle = "background-color: rgba(0, 0, 0, 0.7); position: absolute; top: 0; bottom: 0; z-index: 9999;";
+
+  // Draw masks for the UNSELECTED regions
+  switch (cropMode) {
+    case 'left-3':
+      // Mask Right 2/3
+      maskHtml = `<div style="${bgStyle} left: 33.333%; right: 0;"></div>`;
+      break;
+    case 'center-3':
+      // Mask Left 1/3 and Right 1/3
+      maskHtml = `
+        <div style="${bgStyle} left: 0; width: 33.333%;"></div>
+        <div style="${bgStyle} right: 0; width: 33.333%;"></div>
+      `;
+      break;
+    case 'right-3':
+      // Mask Left 2/3
+      maskHtml = `<div style="${bgStyle} left: 0; width: 66.666%;"></div>`;
+      break;
+    case 'left-2':
+      // Mask Right 1/2
+      maskHtml = `<div style="${bgStyle} left: 50%; right: 0;"></div>`;
+      break;
+    case 'right-2':
+      // Mask Left 1/2
+      maskHtml = `<div style="${bgStyle} left: 0; width: 50%;"></div>`;
+      break;
+  }
+
+  overlay.setContent(`<div style="width: 100%; height: 100%; position: relative;">${maskHtml}</div>`);
+  overlay.setStyle(`body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; }`);
+  overlay.show();
+}
+
+// Module-level listener to prevent zombies (Singleton)
+let previewListener = null;
+
+export function handlePreviewMessage(window) {
+  window.onMessage("previewClip", ({ start, end, verticalCrop, cropMode }) => {
     // 1. Convert start (HH:MM:SS) to seconds
     const [h, m, s] = start.split(':').map(Number);
     const startSeconds = h * 3600 + m * 60 + s;
@@ -22,16 +62,22 @@ export function handlePreviewMessage(window) {
     mpv.set("time-pos", startSeconds);
     core.resume(); // Ensure playing
 
-    // 4. Remove existing listener if any
+    // 4. Show Mask Overlay if applicable
+    if (verticalCrop) {
+      showCropOverlay(cropMode);
+    }
+
+    // 5. Remove existing listener if any
     if (previewListener) {
       event.off("mpv.time-pos.changed", previewListener);
       previewListener = null;
     }
 
-    // 5. Add listener to stop at end
+    // 6. Add listener to stop at end
     previewListener = (time) => {
       if (time >= endSeconds) {
         core.pause();
+        overlay.hide(); // Hide mask
         event.off("mpv.time-pos.changed", previewListener);
         previewListener = null;
       }
@@ -92,6 +138,15 @@ export function processVideoClip(window) {
 
 export function closeWindow(window) {
   window.onMessage("closeWindow", () => {
+    // Cleanup Preview Listener if active
+    if (previewListener) {
+      event.off("mpv.time-pos.changed", previewListener);
+      previewListener = null;
+      core.pause(); // Optional: pause matching the preview behavior
+    }
+    // Cleanup Overlay
+    overlay.hide();
+
     window.hide();
   });
 }

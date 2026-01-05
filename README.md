@@ -1,7 +1,5 @@
 
-# Recorder
-Clip your favourite moments from your videos.
-
+[[_TOC_]]
 
 ## Features
 
@@ -38,15 +36,25 @@ Before you setup the plugin, make sure the version of IINA you're using is `>=1.
 - On the left sidebar, find the menu for "Plugins" and click on the "Install with GitHub" button
 - Copy the plugin's repo URL and click on "Install"
 
-ℹ️ *Other installations for IINA will be updated soon!*
+## How to Use plugin
+- Open IINA and navigate to "Plugins" (Top Menu bar) Click on "reload plugins" --> agin go to plugin and click on "Start Clipping"
+- Go to timestamp you want to clip, and Click on start button and play your video, to stop click on stop button
+- ***Add another timestamp*** and repeat the process
+- you can ***preview*** the clip by clicking on preview button, and ajust the timestamp to get the perfect clip.
+- Click on "Clip All" button to start processing, a ***progress bar*** will show up to show the progress
+- ***Vertical crop*** is optional, if you want to crop your video to 9:16, enable it
+- select which region you want to crop from the split region and select the format
+- when your on vertical crop mode, it will show preview of the video by ***graying out the rest of the video***
+![alt text](screenshots/image-2.png)
+
 
 
 ## Known Issues
 ### start the plugin (from Menu Bar)
 - Go to plugin --> reload plugins
-![alt text](image.png)
+![alt text](screenshots/image.png)
 - click on plugin --> start clipping
-![alt text](image-1.png)
+![alt text](screenshots/image-1.png)
 
 ### preview clip
 - preview clip only work when you click on start button on the timestamp

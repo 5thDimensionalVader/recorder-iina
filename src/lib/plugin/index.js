@@ -11,37 +11,46 @@ function showCropOverlay(cropMode) {
   overlay.simpleMode();
 
   let maskHtml = "";
-  const bgStyle = "background-color: rgba(0, 0, 0, 0.7); position: absolute; top: 0; bottom: 0; z-index: 9999;";
+  // Use aggressive styles to guarantee visibility
+  const bgStyle = "background-color: rgba(0, 0, 0, 0.7); position: absolute; top: 0; bottom: 0; z-index: 2;";
 
   // Draw masks for the UNSELECTED regions
   switch (cropMode) {
     case 'left-3':
-      // Mask Right 2/3
       maskHtml = `<div style="${bgStyle} left: 33.333%; right: 0;"></div>`;
       break;
     case 'center-3':
-      // Mask Left 1/3 and Right 1/3
       maskHtml = `
         <div style="${bgStyle} left: 0; width: 33.333%;"></div>
         <div style="${bgStyle} right: 0; width: 33.333%;"></div>
       `;
       break;
     case 'right-3':
-      // Mask Left 2/3
       maskHtml = `<div style="${bgStyle} left: 0; width: 66.666%;"></div>`;
       break;
     case 'left-2':
-      // Mask Right 1/2
       maskHtml = `<div style="${bgStyle} left: 50%; right: 0;"></div>`;
       break;
     case 'right-2':
-      // Mask Left 1/2
       maskHtml = `<div style="${bgStyle} left: 0; width: 50%;"></div>`;
       break;
   }
 
-  overlay.setContent(`<div style="width: 100%; height: 100%; position: relative;">${maskHtml}</div>`);
-  overlay.setStyle(`body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; }`);
+  // Ensure fullscreen container
+  overlay.setContent(`<div style="width: 100vw; height: 100vh; position: relative; pointer-events: none;">${maskHtml}</div>`);
+
+  // Enforce transparent background for the webview body
+  overlay.setStyle(`
+    html, body {
+      background: transparent !important;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+  `);
+
   overlay.show();
 }
 

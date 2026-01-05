@@ -1,5 +1,17 @@
 
-[[_TOC_]]
+# Table of Contents
+- [Features](#features)
+  - [Batch Clipping](#-batch-clipping)
+  - [Vertical Crop for Social Media](#-vertical-crop-for-social-media)
+  - [Format Selection](#-format-selection)
+  - [Instant Preview](#-instant-preview)
+- [Prerequisites](#prerequisites)
+  - [Installing ffmpeg (macOS)](#installing-ffmpeg-macos)
+- [Installation](#installation)
+- [How to Use plugin](#how-to-use-plugin)
+- [Known Issues](#known-issues)
+  - [start the plugin (from Menu Bar)](#start-the-plugin-from-menu-bar)
+  - [preview clip](#preview-clip)
 
 ## Features
 
@@ -45,16 +57,18 @@ Before you setup the plugin, make sure the version of IINA you're using is `>=1.
 - ***Vertical crop*** is optional, if you want to crop your video to 9:16, enable it
 - select which region you want to crop from the split region and select the format
 - when your on vertical crop mode, it will show preview of the video by ***graying out the rest of the video***
-![alt text](screenshots/image-2.png)
-
-
+<p align="center">
+  <img src="screenshots/image-2.png" width="30%" />
+  <img src="screenshots/image-4.png" width="30%" />
+  <img src="screenshots/image-3.png" width="30%" />
+</p>
 
 ## Known Issues
 ### start the plugin (from Menu Bar)
 - Go to plugin --> reload plugins
-![alt text](screenshots/image.png)
+<img src="screenshots/image.png" width="500" />
 - click on plugin --> start clipping
-![alt text](screenshots/image-1.png)
+<img src="screenshots/image-1.png" width="500" />
 
 ### preview clip
 - preview clip only work when you click on start button on the timestamp

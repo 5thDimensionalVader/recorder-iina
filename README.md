@@ -42,8 +42,11 @@ Before you setup the plugin, make sure the version of IINA you're using is `>=1.
 
 
 ## Known Issues
-### start the plugin
-- to start this plugin, you need to click on plugin --> start clipping (from menu bar)
+### start the plugin (from Menu Bar)
+- Go to plugin --> reload plugins
+![alt text](image.png)
+- click on plugin --> start clipping
+![alt text](image-1.png)
 
 ### preview clip
 - preview clip only work when you click on start button on the timestamp

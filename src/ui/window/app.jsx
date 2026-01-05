@@ -28,7 +28,7 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 const App = () => {
-  const [clips, setClips] = useState([{ id: 1, start: "00:00:00", end: "", status: "IDLE" }]);
+  const [clips, setClips] = useState([{ id: 1, start: "", end: "", status: "IDLE" }]);
   const [isFfmpegInstalled, setIsFfmpegInstalled] = useState(false);
   const [ffmpegStatus, setFfmpegStatus] = useState(false);
   const [hwaccel, setHwaccel] = useState(true);
@@ -88,7 +88,7 @@ const App = () => {
   const addClip = () => {
     // Use max ID + 1
     const maxId = clips.reduce((max, clip) => Math.max(max, clip.id), 0);
-    setClips([...clips, { id: maxId + 1, start: "00:00:00", end: "", status: "IDLE" }]);
+    setClips([...clips, { id: maxId + 1, start: "", end: "", status: "IDLE" }]);
   };
 
   const removeClip = (id) => {
@@ -96,7 +96,7 @@ const App = () => {
       setClips(clips.filter(c => c.id !== id));
     } else {
       // Reset if it's the last one
-      setClips([{ id: 1, start: "00:00:00", end: "", status: "IDLE" }]);
+      setClips([{ id: 1, start: "", end: "", status: "IDLE" }]);
     }
   };
 
@@ -116,7 +116,7 @@ const App = () => {
 
   function handleCloseBtn() {
     iina.postMessage("closeWindow");
-    setClips([{ id: 1, start: "00:00:00", end: "", status: "IDLE" }]);
+    setClips([{ id: 1, start: "", end: "", status: "IDLE" }]);
   }
 
   useEffect(() => {
@@ -124,7 +124,7 @@ const App = () => {
       const formattedTime = formatTime(time);
       // On load, update the first clip's start time if it is 00:00:00 (default)
       setClips(prev => {
-        if (prev.length === 1 && prev[0].start === "00:00:00") {
+        if (prev.length === 1 && prev[0].start === "") {
           return [{ ...prev[0], start: formattedTime }];
         }
         return prev;
@@ -348,7 +348,7 @@ const App = () => {
                 <Input
                   type="text"
                   variant="soft"
-                  value={isFfmpegInstalled ? clip.start : "00:00:00"}
+                  value={isFfmpegInstalled ? (clip.start || "00:00:00") : "00:00:00"}
                   readOnly
                   disabled={!isFfmpegInstalled}
                   endDecorator={
@@ -366,7 +366,7 @@ const App = () => {
               </Tooltip>
 
               {/* Preview Button */}
-              {clip.start !== "00:00:00" && clip.end !== "" && (
+              {clip.start !== "" && clip.end !== "" && (
                 <Tooltip title="Preview Clip" variant="soft">
                   <IconButton
                     onClick={() => handlePreview(clip.start, clip.end)}

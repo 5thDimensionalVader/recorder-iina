@@ -45,44 +45,50 @@ function showCropOverlay(cropMode) {
   overlay.show();
 }
 
-// Module-level listener to prevent zombies (Singleton)
-let previewListener = null;
+// Module-level State for Preview Logic
+let isPreviewing = false;
+let previewEndTime = 0;
+let isListenerRegistered = false;
+
+// SINGLE PERMANENT LISTENER
+function globalTimeListener(time) {
+  // If not previewing, do nothing (passive)
+  if (!isPreviewing) return;
+
+  if (time >= previewEndTime) {
+    core.pause();
+    overlay.hide();
+    isPreviewing = false; // Disable preview mode immediately
+  }
+}
 
 export function handlePreviewMessage(window) {
   window.onMessage("previewClip", ({ start, end, verticalCrop, cropMode }) => {
-    // 1. Convert start (HH:MM:SS) to seconds
+    // 1. Ensure Listener is registered ONLY ONCE
+    if (!isListenerRegistered) {
+      event.on("mpv.time-pos.changed", globalTimeListener);
+      isListenerRegistered = true;
+    }
+
+    // 2. Parse Times
     const [h, m, s] = start.split(':').map(Number);
     const startSeconds = h * 3600 + m * 60 + s;
 
-    // 2. Convert end (HH:MM:SS) to seconds
     const [eh, em, es] = end.split(':').map(Number);
-    const endSeconds = eh * 3600 + em * 60 + es;
+    const endSeconds = eh * 3600 + em * 60 + es; // Store in variable, put in global next
 
-    // 3. Seek to start
+    // 3. Update Global State (Atomic)
+    previewEndTime = endSeconds;
+    isPreviewing = true; // Enable the listener logic
+
+    // 4. Seek and Play
     mpv.set("time-pos", startSeconds);
-    core.resume(); // Ensure playing
+    core.resume();
 
-    // 4. Show Mask Overlay if applicable
+    // 5. Show Visual Overlay
     if (verticalCrop) {
       showCropOverlay(cropMode);
     }
-
-    // 5. Remove existing listener if any
-    if (previewListener) {
-      event.off("mpv.time-pos.changed", previewListener);
-      previewListener = null;
-    }
-
-    // 6. Add listener to stop at end
-    previewListener = (time) => {
-      if (time >= endSeconds) {
-        core.pause();
-        overlay.hide(); // Hide mask
-        event.off("mpv.time-pos.changed", previewListener);
-        previewListener = null;
-      }
-    };
-    event.on("mpv.time-pos.changed", previewListener);
   });
 }
 
@@ -138,12 +144,9 @@ export function processVideoClip(window) {
 
 export function closeWindow(window) {
   window.onMessage("closeWindow", () => {
-    // Cleanup Preview Listener if active
-    if (previewListener) {
-      event.off("mpv.time-pos.changed", previewListener);
-      previewListener = null;
-      core.pause(); // Optional: pause matching the preview behavior
-    }
+    // Disable Preview Mode (Listener becomes passive)
+    isPreviewing = false;
+
     // Cleanup Overlay
     overlay.hide();
 

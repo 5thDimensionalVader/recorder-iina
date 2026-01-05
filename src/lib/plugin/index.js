@@ -122,7 +122,16 @@ function postFfmpegStatus(window, status = false) {
 // LOCAL PLUGIN FUNCTION
 async function ffmpegExecFn(start, finish, hwaccel = false, verticalCrop = false, cropMode = "default", format = "original", window, id, ffmpegPath = "/opt/homebrew/bin/ffmpeg") {
   let isFfmpegRunning = false;
-  if (utils.fileInPath(ffmpegPath)) {
+
+  // Resolve valid ffmpeg path
+  let finalFfmpegPath = ffmpegPath;
+  if (!utils.fileInPath(finalFfmpegPath)) {
+    if (utils.fileInPath("/usr/local/bin/ffmpeg")) {
+      finalFfmpegPath = "/usr/local/bin/ffmpeg";
+    }
+  }
+
+  if (utils.fileInPath(finalFfmpegPath)) {
     displaySimpleOverlay(`Processing Clip ${id}...`, "18px");
     try {
       isFfmpegRunning = true;
@@ -158,7 +167,7 @@ async function ffmpegExecFn(start, finish, hwaccel = false, verticalCrop = false
         cropFilter += ",format=yuv420p";
       }
 
-      const status = core.run(ffmpegPath, [
+      const status = core.run(finalFfmpegPath, [
         '-ss', start,
         '-to', finish,
         '-i', originalPath,

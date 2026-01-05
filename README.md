@@ -8,6 +8,15 @@ Clip your favourite moments from your videos.
 - Share your clip to devices with the right encoding.
 
 
+## Prerequisites
+This plugin requires **ffmpeg** to be installed to function properly.
+
+### Installing ffmpeg (macOS)
+The easiest way is using Homebrew:
+```bash
+brew install ffmpeg
+```
+
 ## Installation
 Before you setup the plugin, make sure the version of IINA you're using is `>=1.4.0`. These are the steps to take when setting up the plugin:
 

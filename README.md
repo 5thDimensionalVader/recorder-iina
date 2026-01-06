@@ -12,6 +12,7 @@
 - [Known Issues](#known-issues)
   - [start the plugin (from Menu Bar)](#start-the-plugin-from-menu-bar)
   - [preview clip](#preview-clip)
+- [Acknowledgements](#acknowledgements)
 
 ## Features
 
@@ -74,3 +75,9 @@ Before you setup the plugin, make sure the version of IINA you're using is `>=1.
 - preview clip only work when you click on start button on the timestamp
 - if you start clip by pressing plugin --> star clipping, it won't show preview icon
 - workaround: click on start button on the timestamp, even though you click on plugin --> start clipping
+
+## Acknowledgements
+A huge thank you to the following contributors who inspired this plugin:
+
+- **[@5thDimensionalVader](https://github.com/5thDimensionalVader)** for the [recorder-iina](https://github.com/5thDimensionalVader/recorder-iina) plugin, which served as the foundation for this project.
+- **[@NapoleonWils0n](https://github.com/NapoleonWils0n)** for the incredible [ffmpeg-scripts](https://github.com/NapoleonWils0n/ffmpeg-scripts), without which the advanced clipping features wouldn't be possible.

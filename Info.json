@@ -1,14 +1,14 @@
 {
-  "name": "Recorder",
+  "name": "MultiCutter",
   "identifier": "com.recorder.iina-plugin",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Clip your favorite moments from your videos.",
   "author": {
-    "name": "Daniel Ifechukwude Chinye",
-    "email": "chinyedaniel@gmail.com"
+    "name": "Karthi Natarajan",
+    "email": "karthi1494@gmail.com"
   },
   "ghVersion": 2,
-  "ghRepo": "5thDimensionalVader/recorder-iina",
+  "ghRepo": "karthisnk/multi-cutter-iina",
   "entry": "dist/index.js",
   "permissions": [
     "show-osd",
@@ -17,7 +17,11 @@
     "network-request",
     "file-system"
   ],
-  "allowedDomains": ["*"],
-  "sidebarTab": { "name": "Recorder"},
+  "allowedDomains": [
+    "*"
+  ],
+  "sidebarTab": {
+    "name": "Recorder"
+  },
   "preferenceDefaults": {}
 }

@@ -1,26 +1,30 @@
-import { postEndTimeMessage, processVideoClip, closeWindow, postCurrentTimeOnce, isFfmpegInstalled } from "./lib/plugin";
+import {
+  postEndTimeMessage,
+  processVideoClip,
+  closeWindow,
+  postCurrentTimeOnce,
+  isFfmpegInstalled,
+} from "./lib/plugin";
 
-const {
-  menu,
-  mpv,
-} = iina;
+const { menu, sidebar } = iina;
 
-// create sidebar instance
-const window = iina.sidebar;
-
-// load the ui 
-window.loadFile("dist/ui/window/index.html");
-postEndTimeMessage(window);
-processVideoClip(window);
-closeWindow(window);
+// load the ui
+sidebar.loadFile("dist/ui/window/index.html");
+postEndTimeMessage(sidebar);
+processVideoClip(sidebar);
+closeWindow(sidebar);
 
 // "Start Clipping" menu item with keyBinding
-const startRecorderMenuItem = menu.item("Start Clipping", () => {
-  window.show();
-  postCurrentTimeOnce(window);
-  isFfmpegInstalled(window);
-}, {
-  keyBinding: "Alt+Shift+r",
-})
+const startRecorderMenuItem = menu.item(
+  "Start Clipping",
+  () => {
+    sidebar.show();
+    postCurrentTimeOnce(sidebar);
+    isFfmpegInstalled(sidebar);
+  },
+  {
+    keyBinding: "Alt+Shift+r",
+  }
+);
 // add menu item
 menu.addItem(startRecorderMenuItem);

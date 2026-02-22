@@ -26,5 +26,5 @@ const startRecorderMenuItem = menu.item(
     keyBinding: "Alt+Shift+r",
   }
 );
-// add menu item
+// add menu item when window is loaded
 menu.addItem(startRecorderMenuItem);

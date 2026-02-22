@@ -4,8 +4,6 @@ import { CssVarsProvider, CssBaseline, Box } from "@mui/joy";
 // ui imports
 import Input from "@mui/joy/Input";
 import Stack from "@mui/joy/Stack";
-import FormControl from "@mui/joy/FormControl";
-import FormLabel from "@mui/joy/FormLabel";
 import Button from "@mui/joy/Button";
 import Typography from "@mui/joy/Typography";
 import Card from "@mui/joy/Card";
@@ -16,9 +14,7 @@ import IconButton from "@mui/joy/IconButton";
 import Tooltip from "@mui/joy/Tooltip";
 
 // icons
-import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RemoveDoneIcon from "@mui/icons-material/RemoveDone";
 import StopIcon from "@mui/icons-material/Stop";
 import HourglassTopIcon from "@mui/icons-material/HourglassTop";

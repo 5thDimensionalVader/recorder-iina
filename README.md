@@ -1,22 +1,21 @@
-
 # Recorder
+
 Clip your favourite moments from your videos.
 
-
 ## Features
+
 - Clip comedic or thrilling moments from your videos, all from your IINA sidebar.
 - Share your clip to devices with the right encoding.
 
-
 ## Installation
+
 Before you setup the plugin, make sure the version of IINA you're using is `>=1.4.0`. These are the steps to take when setting up the plugin:
 
 - Open IINA and navigate to "Settings"
 - On the left sidebar, find the menu for "Plugins" and click on the "Install with GitHub" button
 - Copy the plugin's repo URL and click on "Install"
 
-ℹ️ *Other installations for IINA will be updated soon!*
-
+ℹ️ _Other installations for IINA will be updated soon!_
 
 ## Local development & testing
 
@@ -29,8 +28,6 @@ If `iina-plugin` is not already on your `PATH`, create a symlink:
 ```sh
 ln -s /Applications/IINA.app/Contents/MacOS/iina-plugin /usr/local/bin/iina-plugin
 ```
-
-> On Apple Silicon Homebrew systems you may prefer `/opt/homebrew/bin/iina-plugin` if that directory is earlier on your `PATH`.
 
 ### 2. Clone and install dependencies
 
@@ -56,8 +53,3 @@ Reload plugins in IINA (or restart IINA), then open the Recorder sidebar or use 
 ```sh
 iina-plugin unlink .
 ```
-
-### Notes
-
-- Rebuild with `pnpm run build` after source changes so `dist/` stays in sync (IINA loads the built entry from `Info.json`).
-- Ensure `ffmpeg` is installed (e.g. via Homebrew). The plugin auto-detects common paths and also supports a custom path under **Settings → Plugins → Recorder**.

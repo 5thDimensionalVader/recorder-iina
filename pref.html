@@ -49,9 +49,10 @@
   <div class="pref-section">
     Enter ffmpeg binary path:
     <p class="small secondary pref-help">
-      If you are using Homebrew, the path is usually
-      <code>/opt/homebrew/bin/ffmpeg</code> for Apple Sillion Macs and
-      <code>/usr/local/bin/ffmpeg</code> for Intel Macs.
+      Optional. Leave blank to auto-detect Homebrew installs
+      (<code>/opt/homebrew/bin/ffmpeg</code> on Apple Silicon,
+      <code>/usr/local/bin/ffmpeg</code> on Intel). Set a full path only if
+      ffmpeg lives somewhere else.
     </p>
     <div style="margin-top: 2px">
       <input type="text" data-pref-key="ffmpeg_path" style="width: 100%; margin-top: 2px" />

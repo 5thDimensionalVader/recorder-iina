@@ -1,5 +1,32 @@
 const { core, mpv, utils, overlay, preferences, console } = iina;
 
+const FFMPEG_FALLBACK_PATHS = [
+  "/opt/homebrew/bin/ffmpeg", // Apple Silicon Homebrew
+  "/usr/local/bin/ffmpeg", // Intel Homebrew
+];
+
+/**
+ * Resolve a usable ffmpeg binary path.
+ * Preference wins when non-empty and valid; otherwise probe common Homebrew paths.
+ * Empty/whitespace preference values are treated as unset (IINA fileInPath rejects "").
+ */
+export function resolveFfmpegPath() {
+  const preferred = preferences.get("ffmpeg_path");
+  const candidates = [
+    typeof preferred === "string" ? preferred.trim() : "",
+    ...FFMPEG_FALLBACK_PATHS,
+  ];
+
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    if (utils.fileInPath(candidate)) {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
 // DISPLAY UI FUNCTION
 export function displaySimpleOverlay(
   message,
@@ -10,7 +37,8 @@ export function displaySimpleOverlay(
   overlay.simpleMode();
   overlay.setContent(`<p>${message}</p>`);
   overlay.setStyle(
-    `p { color: ${isError ? "red" : "green"
+    `p { color: ${
+      isError ? "red" : "green"
     }; font-size: ${size}; margin-top: 40px;}`
   );
   overlay.show();
@@ -54,10 +82,17 @@ export function postCurrentTimeOnce(window) {
 }
 
 export function isFfmpegInstalled(window) {
-  const ffmpeg_binary_path = preferences.get("ffmpeg_path") ?? "ffmpeg";
-  let bool = utils.fileInPath(ffmpeg_binary_path);
+  const ffmpegPath = resolveFfmpegPath();
   window.postMessage("is-ffmpeg-installed", {
-    isInstalled: bool,
+    isInstalled: Boolean(ffmpegPath),
+    path: ffmpegPath ?? "",
+  });
+}
+
+/** Re-run detection when the sidebar UI mounts or asks for a refresh. */
+export function listenFfmpegCheck(window) {
+  window.onMessage("requestFfmpegCheck", () => {
+    isFfmpegInstalled(window);
   });
 }
 
@@ -73,14 +108,13 @@ async function ffmpegExecFn(
   finish,
   hwaccel = false,
   verticalCrop = false,
-  window,
-  ffmpegPath = preferences.get("ffmpeg_path")
+  window
 ) {
   let isFfmpegRunning = false;
-  if (utils.fileInPath(ffmpegPath)) {
-    console.log(
-      `ffmpeg found at ${preferences.get("ffmpeg_path")}, processing clip`
-    );
+  const ffmpegPath = resolveFfmpegPath();
+
+  if (ffmpegPath) {
+    console.log(`ffmpeg found at ${ffmpegPath}, processing clip`);
 
     displaySimpleOverlay("Processing ...", "18px");
     try {
@@ -99,7 +133,7 @@ async function ffmpegExecFn(
           finish,
           verticalCrop && "-vf",
           verticalCrop &&
-          "crop=w=ih*(9/16):h=ih:x=(iw-ow)/2:y=0,format=yuv420p",
+            "crop=w=ih*(9/16):h=ih:x=(iw-ow)/2:y=0,format=yuv420p",
           hwaccel && "-c:v",
           hwaccel && "h264_videotoolbox",
           hwaccel && "-q:v",
@@ -115,8 +149,8 @@ async function ffmpegExecFn(
           `${mpv
             .getString("path")
             .substring(0, mpv.getString("path").lastIndexOf("/"))}/${mpv
-              .getString("filename")
-              .slice(0, mpv.getString("filename").lastIndexOf("."))}_clip.mov`,
+            .getString("filename")
+            .slice(0, mpv.getString("filename").lastIndexOf("."))}_clip.mov`,
         ].filter(Boolean)
       );
 
@@ -125,9 +159,9 @@ async function ffmpegExecFn(
         postFfmpegStatus(window, isFfmpegRunning);
         displaySimpleOverlay(
           "Clip saved in " +
-          mpv
-            .getString("path")
-            .substring(0, mpv.getString("path").lastIndexOf("/")),
+            mpv
+              .getString("path")
+              .substring(0, mpv.getString("path").lastIndexOf("/")),
           "18px"
         );
         window.hide();

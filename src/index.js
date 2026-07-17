@@ -4,6 +4,7 @@ import {
   closeWindow,
   postCurrentTimeOnce,
   isFfmpegInstalled,
+  listenFfmpegCheck,
 } from "./lib/plugin";
 
 const { menu, sidebar } = iina;
@@ -13,6 +14,7 @@ sidebar.loadFile("dist/ui/window/index.html");
 postEndTimeMessage(sidebar);
 processVideoClip(sidebar);
 closeWindow(sidebar);
+listenFfmpegCheck(sidebar);
 
 // "Start Clipping" menu item with keyBinding
 const startRecorderMenuItem = menu.item(

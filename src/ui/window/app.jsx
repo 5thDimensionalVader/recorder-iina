@@ -81,6 +81,8 @@ export default App = () => {
 
     iina.onMessage("currentTime", handleTimeUpdate);
     iina.onMessage("is-ffmpeg-installed", handleDepencencyCheck);
+    // Request a check on mount so the sidebar tab works without the menu action
+    iina.postMessage("requestFfmpegCheck");
   }, []);
 
   useEffect(() => {

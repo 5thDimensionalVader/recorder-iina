@@ -1,0 +1,5 @@
+dist/
+coverage/
+node_modules/
+.pi-subagents/
+pnpm-lock.yaml

@@ -1,2 +1,213 @@
-!function(){function e(e,t,r,n,o,i,a){try{var s=e[i](a),l=s.value}catch(e){r(e);return}s.done?t(l):Promise.resolve(l).then(n,o)}function t(e,t){(null==t||t>e.length)&&(t=e.length);for(var r=0,n=Array(t);r<t;r++)n[r]=e[r];return n}"function"==typeof SuppressedError&&SuppressedError;var r=iina.core,n=iina.mpv,o=iina.utils,i=iina.overlay,a=iina.preferences,s=iina.console,l=["/opt/homebrew/bin/ffmpeg","/usr/local/bin/ffmpeg"];function u(){var e=a.get("ffmpeg_path"),r=["string"==typeof e?e.trim():""].concat(function(e){if(Array.isArray(e))return t(e)}(l)||function(e){if("undefined"!=typeof Symbol&&null!=e[Symbol.iterator]||null!=e["@@iterator"])return Array.from(e)}(l)||function(e,r){if(e){if("string"==typeof e)return t(e,void 0);var n=Object.prototype.toString.call(e).slice(8,-1);if("Object"===n&&e.constructor&&(n=e.constructor.name),"Map"===n||"Set"===n)return Array.from(n);if("Arguments"===n||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))return t(e,void 0)}}(l)||function(){throw TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()),n=!0,i=!1,s=void 0;try{for(var u,c=r[Symbol.iterator]();!(n=(u=c.next()).done);n=!0){var f=u.value;if(f&&o.fileInPath(f))return f}}catch(e){i=!0,s=e}finally{try{n||null==c.return||c.return()}finally{if(i)throw s}}return null}function c(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:"15px",r=arguments.length>2&&void 0!==arguments[2]&&arguments[2],n=arguments.length>3&&void 0!==arguments[3]?arguments[3]:3e3;i.simpleMode(),i.setContent(`<p>${e}</p>`),i.setStyle(`p { color: ${r?"red":"green"}; font-size: ${t}; margin-top: 40px;}`),i.show(),setTimeout(function(){i.hide()},n)}function f(e){var t=u();e.postMessage("is-ffmpeg-installed",{isInstalled:!!t,path:null!=t?t:""})}function p(e){var t=arguments.length>1&&void 0!==arguments[1]&&arguments[1];e.postMessage("ffmpeg-status-out",{status:t})}var g=iina.menu,d=iina.sidebar;d.loadFile("dist/ui/window/index.html"),d.onMessage("getEndTime",function(){var e=n.getNumber("time-pos");d.postMessage("endTime",{time:e}),r.pause()}),d.onMessage("processVideoClip",function(t){!function(t,i){var a,l=arguments.length>2&&void 0!==arguments[2]&&arguments[2],f=arguments.length>3&&void 0!==arguments[3]&&arguments[3],g=arguments.length>4?arguments[4]:void 0;(a=function(){var e,a,d;return function(e,t){var r,n,o,i={label:0,sent:function(){if(1&o[0])throw o[1];return o[1]},trys:[],ops:[]},a=Object.create(("function"==typeof Iterator?Iterator:Object).prototype);return a.next=s(0),a.throw=s(1),a.return=s(2),"function"==typeof Symbol&&(a[Symbol.iterator]=function(){return this}),a;function s(s){return function(l){var u=[s,l];if(r)throw TypeError("Generator is already executing.");for(;a&&(a=0,u[0]&&(i=0)),i;)try{if(r=1,n&&(o=2&u[0]?n.return:u[0]?n.throw||((o=n.return)&&o.call(n),0):n.next)&&!(o=o.call(n,u[1])).done)return o;switch(n=0,o&&(u=[2&u[0],o.value]),u[0]){case 0:case 1:o=u;break;case 4:return i.label++,{value:u[1],done:!1};case 5:i.label++,n=u[1],u=[0];continue;case 7:u=i.ops.pop(),i.trys.pop();continue;default:if(!(o=(o=i.trys).length>0&&o[o.length-1])&&(6===u[0]||2===u[0])){i=0;continue}if(3===u[0]&&(!o||u[1]>o[0]&&u[1]<o[3])){i.label=u[1];break}if(6===u[0]&&i.label<o[1]){i.label=o[1],o=u;break}if(o&&i.label<o[2]){i.label=o[2],i.ops.push(u);break}o[2]&&i.ops.pop(),i.trys.pop();continue}u=t.call(e,i)}catch(e){u=[6,e],n=0}finally{r=o=0}if(5&u[0])throw u[1];return{value:u[0]?u[1]:void 0,done:!0}}}}(this,function(h){switch(h.label){case 0:if(!(e=u()))return[3,5];s.log(`ffmpeg found at ${e}, processing clip`),c("Processing ...","18px"),h.label=1;case 1:return h.trys.push([1,3,,4]),p(g,!0),[4,o.exec(e,[l&&"-hwaccel",l&&"videotoolbox","-i",n.getString("path"),"-ss",t,"-to",i,f&&"-vf",f&&"crop=w=ih*(9/16):h=ih:x=(iw-ow)/2:y=0,format=yuv420p",l&&"-c:v",l&&"h264_videotoolbox",l&&"-q:v",l&&"70",!l&&"-c:v",!l&&"libx264",!l&&"-crf",!l&&"23","-c:a","copy","-movflags","+faststart",`${n.getString("path").substring(0,n.getString("path").lastIndexOf("/"))}/${n.getString("filename").slice(0,n.getString("filename").lastIndexOf("."))}_clip.mov`].filter(Boolean))];case 2:return 0===(a=h.sent().status)?(p(g,!1),c("Clip saved in "+n.getString("path").substring(0,n.getString("path").lastIndexOf("/")),"18px"),g.hide(),r.resume()):c(`FFmpeg error code ${a}`,"18px",!0),[3,4];case 3:return d=h.sent(),c(`An error occured: ${d}`,"18px",!0),[3,4];case 4:return[3,6];case 5:c("ffmpeg not found","18px",!0),h.label=6;case 6:return[2]}})},function(){var t=this,r=arguments;return new Promise(function(n,o){var i=a.apply(t,r);function s(t){e(i,n,o,s,l,"next",t)}function l(t){e(i,n,o,s,l,"throw",t)}s(void 0)})})()}(t.startPos,t.endPos,t.hwaccel,t.verticalCrop,d)}),d.onMessage("closeWindow",function(){d.hide()}),d.onMessage("requestFfmpegCheck",function(){f(d)});var h=g.item("Start Clipping",function(){var e;d.show(),e=n.getNumber("time-pos"),d.postMessage("currentTime",{time:e}),f(d)},{keyBinding:"Alt+Shift+r"});g.addItem(h)}();
-//# sourceMappingURL=index.js.map
+"use strict";
+(() => {
+  // packages/plugin/src/ffmpeg.ts
+  var FFMPEG_FALLBACK_PATHS = ["/opt/homebrew/bin/ffmpeg", "/usr/local/bin/ffmpeg"];
+  function resolveFfmpegPath(preferredPath, fileInPath) {
+    const preferred = typeof preferredPath === "string" ? preferredPath.trim() : "";
+    const candidates = [preferred, ...FFMPEG_FALLBACK_PATHS];
+    return candidates.find((candidate) => candidate.length > 0 && fileInPath(candidate));
+  }
+  function isLocalSourcePath(sourcePath) {
+    return sourcePath.length > 0 && !sourcePath.includes("://");
+  }
+  function timestampToSeconds(timestamp) {
+    const match = /^(\d+):([0-5]\d):([0-5]\d)$/.exec(timestamp);
+    if (!match) return void 0;
+    const [, hours, minutes, seconds] = match;
+    if (hours === void 0 || minutes === void 0 || seconds === void 0) return void 0;
+    return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
+  }
+  function isValidClipRange(startPosition, endPosition) {
+    const start = timestampToSeconds(startPosition);
+    const end = timestampToSeconds(endPosition);
+    return start !== void 0 && end !== void 0 && end > start;
+  }
+  function createClipOutputPath(sourcePath, filename) {
+    const lastSlash = sourcePath.lastIndexOf("/");
+    const directory = lastSlash >= 0 ? sourcePath.slice(0, lastSlash) : "";
+    const lastDot = filename.lastIndexOf(".");
+    const basename = (lastDot > 0 ? filename.slice(0, lastDot) : filename).trim() || "clip";
+    const outputName = `${basename}_clip.mov`;
+    return directory ? `${directory}/${outputName}` : lastSlash === 0 ? `/${outputName}` : outputName;
+  }
+  function createAvailableClipOutputPath(sourcePath, filename, fileExists) {
+    const preferredPath = createClipOutputPath(sourcePath, filename);
+    if (!fileExists(preferredPath)) return preferredPath;
+    const stem = preferredPath.slice(0, -".mov".length);
+    let index = 2;
+    while (fileExists(`${stem}_${index}.mov`)) index += 1;
+    return `${stem}_${index}.mov`;
+  }
+  function createFfmpegArguments(options) {
+    const args = [];
+    if (options.hardwareAcceleration) {
+      args.push("-hwaccel", "videotoolbox");
+    }
+    args.push("-i", options.sourcePath, "-ss", options.startPosition, "-to", options.endPosition);
+    if (options.verticalCrop) {
+      args.push("-vf", "crop=w=ih*(9/16):h=ih:x=(iw-ow)/2:y=0,format=yuv420p");
+    }
+    if (options.hardwareAcceleration) {
+      args.push("-c:v", "h264_videotoolbox", "-q:v", "70");
+    } else {
+      args.push("-c:v", "libx264", "-crf", "23");
+    }
+    args.push("-c:a", "copy", "-movflags", "+faststart", options.outputPath);
+    return args;
+  }
+
+  // packages/plugin/src/recorder.ts
+  var overlayHideTimer;
+  function postToSidebar(sidebar, name, payload) {
+    sidebar.postMessage(name, payload);
+  }
+  function isProcessVideoClipPayload(value) {
+    if (typeof value !== "object" || value === null) return false;
+    const payload = value;
+    return typeof payload.startPos === "string" && typeof payload.endPos === "string" && isValidClipRange(payload.startPos, payload.endPos) && typeof payload.hwaccel === "boolean" && typeof payload.verticalCrop === "boolean";
+  }
+  function escapeHtml(value) {
+    return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+  }
+  function displayOverlay(api, message, tone = "neutral", duration = 3e3) {
+    const color = tone === "error" ? "#ff6961" : tone === "success" ? "#70d594" : "#f5f6f8";
+    api.overlay.simpleMode();
+    api.overlay.setContent(`<p>${escapeHtml(message)}</p>`);
+    api.overlay.setStyle(
+      `p { color: ${color}; font: 600 18px -apple-system, BlinkMacSystemFont, sans-serif; margin-top: 40px; text-align: center; }`
+    );
+    api.overlay.show();
+    if (overlayHideTimer !== void 0) clearTimeout(overlayHideTimer);
+    overlayHideTimer = setTimeout(() => {
+      api.overlay.hide();
+      overlayHideTimer = void 0;
+    }, duration);
+  }
+  function postClipStatus(sidebar, payload) {
+    postToSidebar(sidebar, "ffmpeg-status-out", payload);
+  }
+  function detectFfmpeg(api) {
+    return resolveFfmpegPath(
+      api.preferences.get("ffmpeg_path"),
+      (path) => api.utils.fileInPath(path)
+    );
+  }
+  function postFfmpegAvailability(api) {
+    const path = detectFfmpeg(api);
+    postToSidebar(api.sidebar, "is-ffmpeg-installed", {
+      isInstalled: path !== void 0,
+      path: path ?? ""
+    });
+  }
+  function postCurrentTime(api) {
+    postToSidebar(api.sidebar, "currentTime", { time: api.mpv.getNumber("time-pos") });
+  }
+  async function processVideoClip(api, request) {
+    const ffmpegPath = detectFfmpeg(api);
+    if (!ffmpegPath) {
+      const message = "FFmpeg was not found. Check Recorder preferences.";
+      postClipStatus(api.sidebar, { status: false, message, tone: "error" });
+      displayOverlay(api, message, "error");
+      return;
+    }
+    const sourcePath = api.mpv.getString("path");
+    const filename = api.mpv.getString("filename");
+    if (!filename || !isLocalSourcePath(sourcePath)) {
+      const message = "Open a local video before creating a clip.";
+      postClipStatus(api.sidebar, { status: false, message, tone: "error" });
+      displayOverlay(api, message, "error");
+      return;
+    }
+    const outputPath = createAvailableClipOutputPath(
+      sourcePath,
+      filename,
+      (path) => api.utils.fileInPath(path)
+    );
+    const args = createFfmpegArguments({
+      sourcePath,
+      startPosition: request.startPos,
+      endPosition: request.endPos,
+      hardwareAcceleration: request.hwaccel,
+      verticalCrop: request.verticalCrop,
+      outputPath
+    });
+    api.console.log(`FFmpeg found at ${ffmpegPath}; creating ${outputPath}`);
+    postClipStatus(api.sidebar, {
+      status: true,
+      message: "Creating your clip…",
+      tone: "neutral"
+    });
+    displayOverlay(api, "Creating clip…");
+    try {
+      const result = await api.utils.exec(ffmpegPath, args);
+      if (result.status !== 0) {
+        const message2 = `FFmpeg stopped with error code ${result.status}.`;
+        api.console.error(result.stderr || message2);
+        postClipStatus(api.sidebar, { status: false, message: message2, tone: "error" });
+        displayOverlay(api, message2, "error");
+        return;
+      }
+      const lastSlash = outputPath.lastIndexOf("/");
+      const outputDirectory = lastSlash >= 0 ? outputPath.slice(0, lastSlash) : "the video folder";
+      const message = `Clip saved in ${outputDirectory}`;
+      postClipStatus(api.sidebar, { status: false, message, tone: "success" });
+      displayOverlay(api, message, "success");
+      api.sidebar.hide();
+      api.core.resume();
+    } catch (error) {
+      const message = `Could not create the clip: ${String(error)}`;
+      api.console.error(message);
+      postClipStatus(api.sidebar, { status: false, message, tone: "error" });
+      displayOverlay(api, message, "error");
+    }
+  }
+  function registerSidebarMessages(api) {
+    api.sidebar.onMessage("getEndTime", () => {
+      postToSidebar(api.sidebar, "endTime", { time: api.mpv.getNumber("time-pos") });
+      api.core.pause();
+    });
+    api.sidebar.onMessage("processVideoClip", (payload) => {
+      if (!isProcessVideoClipPayload(payload)) {
+        postClipStatus(api.sidebar, {
+          status: false,
+          message: "Recorder received an invalid clip request.",
+          tone: "error"
+        });
+        return;
+      }
+      void processVideoClip(api, payload);
+    });
+    api.sidebar.onMessage("closeWindow", () => api.sidebar.hide());
+    api.sidebar.onMessage("requestCurrentTime", () => postCurrentTime(api));
+    api.sidebar.onMessage("requestFfmpegCheck", () => postFfmpegAvailability(api));
+  }
+  function setupRecorder(api) {
+    let sidebarLoaded = false;
+    const loadSidebar = () => {
+      if (sidebarLoaded) return;
+      api.sidebar.loadFile("dist/ui/window/index.html");
+      registerSidebarMessages(api);
+      sidebarLoaded = true;
+    };
+    const startRecorderMenuItem = api.menu.item(
+      "Start Clipping",
+      () => {
+        if (!api.core.window.loaded) return;
+        loadSidebar();
+        api.sidebar.show();
+        postCurrentTime(api);
+        postFfmpegAvailability(api);
+      },
+      { keyBinding: "Alt+Shift+r" }
+    );
+    api.menu.addItem(startRecorderMenuItem);
+    if (api.core.window.loaded) {
+      loadSidebar();
+    } else {
+      api.event.on("iina.window-loaded", loadSidebar);
+    }
+  }
+
+  // packages/plugin/src/index.ts
+  setupRecorder(iina);
+})();

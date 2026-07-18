@@ -1,55 +1,85 @@
 # Recorder
 
-Clip your favourite moments from your videos.
+Clip your favourite moments from videos without leaving IINA.
 
 ## Features
 
-- Clip comedic or thrilling moments from your videos, all from your IINA sidebar.
-- Share your clip to devices with the right encoding.
+- Choose a clip range from the IINA sidebar.
+- Export with FFmpeg beside the source video.
+- Use Apple VideoToolbox hardware acceleration.
+- Create an optional centered 9:16 crop for social video.
+
+## Requirements
+
+- IINA 1.4.0 or newer
+- FFmpeg installed through Homebrew or configured in Recorder preferences
+- Node.js 22 or newer and pnpm 11 for local development
+
+Recorder checks `/opt/homebrew/bin/ffmpeg` on Apple Silicon and `/usr/local/bin/ffmpeg` on Intel
+when no custom path is configured.
 
 ## Installation
 
-Before you setup the plugin, make sure the version of IINA you're using is `>=1.4.0`. These are the steps to take when setting up the plugin:
+Requires IINA 1.4.0 or later and FFmpeg.
 
-- Open IINA and navigate to "Settings"
-- On the left sidebar, find the menu for "Plugins" and click on the "Install with GitHub" button
-- Copy the plugin's repo URL and click on "Install"
+1. Open IINA → Settings → Plugins.
+2. Choose **Install from GitHub** and enter:
+   `https://github.com/5thDimensionalVader/recorder-iina`
+3. Enable **Recorder**.
+4. Open a local video, then choose Plugins → **Start Clipping** or press <kbd>⌥⇧R</kbd>.
 
-ℹ️ _Other installations for IINA will be updated soon!_
+Recorder detects Homebrew installations of FFmpeg automatically. If FFmpeg is installed somewhere
+else, open IINA → Settings → Plugins → Recorder → Preferences and enter the full path to the binary.
+Completed clips are saved beside the source video.
 
-## Local development & testing
+## Local development and testing
 
-Use the IINA plugin CLI to link this repo into your local plugins folder while developing.
+Requirements: macOS, Node.js 22 or later, pnpm 11, and FFmpeg.
 
-### 1. Make the CLI available
+```sh
+pnpm install
+pnpm check
+```
 
-If `iina-plugin` is not already on your `PATH`, create a symlink:
+Recorder is organized as a pnpm workspace:
+
+- `@recorder/contracts` contains the typed messages shared by the plugin and webview.
+- `@recorder/plugin` contains the TypeScript IINA runtime bundled with esbuild.
+- `@recorder/ui` contains the React and TypeScript sidebar bundled with Vite.
+
+To test the checkout directly in IINA, first uninstall the GitHub copy so IINA does not load two
+plugins with the `com.recorder.iina-plugin` identifier. Make the IINA plugin CLI available if it is
+not already on your `PATH`:
 
 ```sh
 ln -s /Applications/IINA.app/Contents/MacOS/iina-plugin /usr/local/bin/iina-plugin
 ```
 
-### 2. Clone and install dependencies
+Then build and link the development checkout:
 
 ```sh
-git clone https://github.com/5thDimensionalVader/recorder-iina.git
-cd recorder-iina
-pnpm install
-pnpm run build
+pnpm iina:link
 ```
 
-### 3. Link the plugin for local testing
-
-From the project root (or pass the project path as `<dir>`):
+Restart IINA after linking or rebuilding. Remove the development link with:
 
 ```sh
-iina-plugin link .
+pnpm iina:unlink
 ```
 
-Reload plugins in IINA (or restart IINA), then open the Recorder sidebar or use **Alt+Shift+R**.
-
-### 4. Unlink when you're done
+Other useful commands:
 
 ```sh
-iina-plugin unlink .
+pnpm dev        # preview the sidebar UI in a browser
+pnpm build      # create and validate the production bundle in dist/
+pnpm typecheck  # type-check every workspace package
+pnpm test       # run plugin unit tests
+pnpm lint       # run ESLint
+pnpm format     # format source and configuration files
 ```
+
+The production `dist/` bundle is committed because IINA installs the plugin directly from the
+GitHub repository. `Info.json` loads `dist/index.js`, and the sidebar is packaged as a self-contained,
+CSP-hashed `dist/ui/window/index.html` for IINA's file-backed WKWebView. These files are generated
+artifacts; edit the sources under `packages/` and run `pnpm build` instead of editing `dist/`
+directly.

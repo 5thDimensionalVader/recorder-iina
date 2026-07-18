@@ -1,0 +1,419 @@
+:root {
+  color: #f5f4ef;
+  background: #000;
+  color-scheme: dark;
+  font-family: 'Avenir Next', Avenir, 'Helvetica Neue', sans-serif;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  --onyx: #000;
+  --onyx-deep: #2c2f30;
+  --ink: #f5f4ef;
+  --muted: rgba(245, 244, 239, 0.62);
+  --faint: rgba(245, 244, 239, 0.38);
+  --line: rgba(255, 255, 255, 0.13);
+  --line-soft: rgba(255, 255, 255, 0.075);
+  --success: #75dda0;
+  --danger: #ff9189;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.recorder-document,
+.recorder-document body,
+.recorder-document #root {
+  min-height: 100%;
+  margin: 0;
+  background: var(--onyx);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible + span {
+  outline: 2px solid rgba(245, 244, 239, 0.85);
+  outline-offset: 3px;
+}
+
+.recorder-shell {
+  min-height: 100vh;
+  padding: 24px 18px 22px;
+  background: var(--onyx);
+}
+
+.recorder-heading {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.recorder-heading p,
+.recorder-heading h1,
+.recorder-heading span,
+.section-heading h2,
+.section-heading span,
+.range-help,
+.option-copy strong,
+.option-copy small,
+.clip-feedback {
+  margin: 0;
+}
+
+.recorder-heading p {
+  color: rgba(245, 244, 239, 0.72);
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.recorder-heading h1 {
+  margin: 5px 0 3px;
+  color: var(--ink);
+  font-size: 22px;
+  font-weight: 520;
+  letter-spacing: -0.035em;
+}
+
+.recorder-heading span {
+  color: var(--faint);
+  font-size: 10px;
+  letter-spacing: 0.01em;
+}
+
+.clip-controls {
+  padding-top: 22px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 13px;
+}
+
+.section-heading h2 {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.section-heading span {
+  color: var(--faint);
+  font-size: 9px;
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.time-field {
+  position: relative;
+  min-width: 0;
+  padding: 13px 11px 14px 0;
+}
+
+.time-field + .time-field {
+  padding-left: 14px;
+  border-left: 1px solid var(--line-soft);
+}
+
+.time-field > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--faint);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.time-field strong {
+  display: block;
+  overflow: hidden;
+  color: var(--ink);
+  font-family: 'SF Mono', 'Roboto Mono', monospace;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 450;
+  letter-spacing: 0.035em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.time-field--action {
+  padding-right: 35px;
+}
+
+.stop-button {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid rgba(255, 145, 137, 0.42);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--danger);
+  background: transparent;
+  transform: translateY(-50%);
+  transition:
+    color 140ms ease,
+    background 140ms ease;
+}
+
+.stop-button:hover:not(:disabled) {
+  color: var(--onyx-deep);
+  background: var(--danger);
+}
+
+.stop-button:disabled {
+  cursor: default;
+  opacity: 0.28;
+}
+
+.range-help {
+  margin-top: 9px;
+  color: var(--faint);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.toggle-list {
+  margin-top: 18px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 54px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.option-copy {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 2px;
+}
+
+.option-copy strong {
+  color: rgba(245, 244, 239, 0.88);
+  font-size: 11px;
+  font-weight: 520;
+}
+
+.option-copy small {
+  color: var(--faint);
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.switch-control {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.switch-control input {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.switch-control > span {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: transparent;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease;
+}
+
+.switch-control > span::after {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(245, 244, 239, 0.55);
+  content: '';
+  transition:
+    background 150ms ease,
+    transform 150ms ease;
+}
+
+.switch-control input:checked + span {
+  border-color: rgba(245, 244, 239, 0.76);
+  background: rgba(245, 244, 239, 0.14);
+}
+
+.switch-control input:checked + span::after {
+  background: var(--ink);
+  transform: translateX(14px);
+}
+
+.switch-control input:disabled {
+  cursor: default;
+}
+
+.switch-control input:disabled + span {
+  opacity: 0.35;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 9px;
+  margin-top: 22px;
+}
+
+.primary-button,
+.secondary-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 13px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 590;
+  letter-spacing: 0.015em;
+  transition:
+    color 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease;
+}
+
+.primary-button {
+  border: 1px solid var(--ink);
+  color: var(--onyx-deep);
+  background: var(--ink);
+}
+
+.primary-button:hover:not(:disabled) {
+  color: #191b1c;
+  background: #fff;
+}
+
+.secondary-button {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: var(--muted);
+  background: transparent;
+}
+
+.secondary-button:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: rgba(255, 255, 255, 0.48);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.clip-feedback {
+  padding: 10px 0 1px;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.clip-feedback--success {
+  color: var(--success);
+}
+
+.clip-feedback--error {
+  color: var(--danger);
+}
+
+.dependency-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-top: 16px;
+  margin-top: 17px;
+  border-top: 1px solid var(--line-soft);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 520;
+}
+
+.dependency-status svg {
+  flex: 0 0 auto;
+}
+
+.dependency-status--available svg {
+  color: var(--success);
+}
+
+.dependency-status--missing svg {
+  color: var(--danger);
+}
+
+.dependency-status--checking svg {
+  color: var(--faint);
+}
+
+.spin {
+  animation: recorder-spin 850ms linear infinite;
+}
+
+@keyframes recorder-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 250px) {
+  .time-grid,
+  .action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .time-field + .time-field {
+    padding-left: 0;
+    border-top: 1px solid var(--line-soft);
+    border-left: 0;
+  }
+
+  .section-heading span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

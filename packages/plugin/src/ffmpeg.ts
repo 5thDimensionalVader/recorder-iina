@@ -1,4 +1,4 @@
-export const FFMPEG_FALLBACK_PATHS = ['/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg'] as const;
+export const FFMPEG_FALLBACK_PATHS = ['/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg', '/usr/bin/ffmpeg', '/bin/ffmpeg'] as const;
 
 export interface FfmpegArgumentsOptions {
   sourcePath: string;
